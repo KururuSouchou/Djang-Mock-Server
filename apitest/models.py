@@ -8,9 +8,9 @@ class MyApp(models.Model):
         return self.name
 
 class MyApi(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     app_name = models.ForeignKey(MyApp)
-    url_path = models.CharField(max_length=100, unique=True)
+    url_path = models.CharField(max_length=100)
     methods = (
               ('GET', 'GET'),
               ('HEAD', "HEAD"),

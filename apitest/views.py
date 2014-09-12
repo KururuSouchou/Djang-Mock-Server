@@ -117,7 +117,7 @@ class ApiUpdate(UpdateView):
     model = MyApi
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('success')
-    fields = ['url_path', 'method', 'category', 'status_code', 'response_format', 'response_body', 'response_headers', 'description']
+    fields = ['name', 'url_path', 'method', 'category', 'status_code', 'response_format', 'response_body', 'response_headers', 'description']
     def get_object(self, queryset=None):
         obj = super(ApiUpdate, self).get_object()
         u = self.request.user
@@ -169,8 +169,18 @@ def detail(request, api_id):
 def apiview(request, app_name, url_path):
     old_path = url_path
     if '.' in url_path:
-        d = url_path.index('.')
-        url_path = old_path[0:d]
+        d = url_path.rindex('.')
+        p = url_path[d + 1:]
+        if 'json' in p:
+            url_path = url_path[0:d]
+            content_type = 'json'
+        elif 'xml' in p:
+            url_path = url_path[0:d]
+            content_type = 'xml'
+        else:
+            url_path = old_path
+            content_type = None
+
     try:
         item = MyApp.objects.get(name=app_name)
     except ObjectDoesNotExist:
@@ -181,23 +191,18 @@ def apiview(request, app_name, url_path):
         return HttpResponse(content='No such Api.', content_type='text/plain', status=404, reason=None)
     if not request.method == i.method:
         return HttpResponse(content='No such method.', content_type='text/plain', status=404, reason=None)
-    if '.' in old_path:
-        d = old_path.index('.')
-        f = d + 1
-        content_type = old_path[f:].lower()
+    if not content_type == None:
         if '/' in i.response_format:
-            s1 = i.response_format.index('/')
-            if '+' in i.response_format:
-                s2 = i.response_format.index('+')
-                format = i.response_format[s1 + 1:s2]
-
+            s = i.response_format.rindex('/')
+            l = i.response_format[s + 1:]
+            if '+' in l:
+                p = l.index('+')
+                format = l[:p]
             else:
-                format = i.response_format[s1 + 1:]
-        else:
-            format = i.response_format
+                format = l
+        else: format = i.response_format
         if not content_type == format:
-            return HttpResponse(content='Wrong content-type.', content_type='text/plain', status=404, reason=None)
-
+            return HttpResponse(content='Wrong content_type.', content_type='text/plain', status=404, reason=None)
 
     response = HttpResponse()
     response.__init__(content=i.response_body, content_type=i.response_format, status=200, reason=None)

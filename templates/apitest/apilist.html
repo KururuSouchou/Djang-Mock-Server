@@ -2,7 +2,7 @@
 {% block title %}API List For APP'{{ item.name }}'{% endblock %}
 {% block content %}
 {% for item in items %}
-    <li><a href="/api/{{ item.id }}/">{{ item.name }}</a></li>
+    <li><a href="/api/{{ item.id }}/">{{ item.name }}, {{ item.method }}, {{ item.response_format }}</a></li>
 {% endfor %}
 {% include 'pagination.html' %}
 <p><a href="/{{ item.name }}/new_api">add new api</a></p>

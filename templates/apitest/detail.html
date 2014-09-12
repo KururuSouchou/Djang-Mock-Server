@@ -4,7 +4,7 @@
 {% block content %}
 <h4>You Can Test Your API In Your Terminal Through The Command Below:</h4>
 <p>curl -v -X {{ item.method }} http://mock.mmclock.cn/apiview/{{ item.app_name }}/{{ item.url_path }}</p>
-
+<p><a href="/app/{{ item.app_name.id }}/">See More API(s) For This APP.</a></p>
 <h1>app:{{ item.app_name }}</h1>
 <p>url:{{ item.url_path }}</p>
 <p>owner:{{ item.owner }}</p>
