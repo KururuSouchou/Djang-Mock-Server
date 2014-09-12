@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}API Delete Confirm{% endblock %}
+{% block content %}
+
+<form action="" method="post">{% csrf_token %}
+    <p>Are you sure you want to delete "{{ object }}"?</p>
+    <input type="submit" value="Confirm" />
+    <script type="text/javascript">
+function goBack()
+  {window.history.go(-1)}  
+</script>
+<input type="button" value="Back" onclick="goBack()" />
+
+</form>
+{% endblock %}

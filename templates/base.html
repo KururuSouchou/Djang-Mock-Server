@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <title>Django Mock Server</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <link rel="shortcut icon" href="{{STATIC_URL}}img/dill1.png">
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link rel="stylesheet" href="{{STATIC_URL}}styles/dfc57042.vendor.css">
+        <link rel="stylesheet" href="{{STATIC_URL}}styles/a5896f90.main.css">
+    
+    <body>
+        <!--[if lt IE 10]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                	{% if user.is_authenticated %}	
+					<li>		
+						<a href="#" class="navbar-brand">Welcome,{{ user.username }}！</a>
+					</li>
+					<li>		
+						<a href="{% url 'logout' %}">Logout</a>
+					</li>	
+		          	{% else %}
+					<li>
+						<a href="{% url 'login' %}" class="navbar-brand">登錄</a>
+					{% endif %}
+                    </li>
+                    <li><a href="{% url 'applist' %}">Home</a></li>
+                    
+                </ul>
+                <h3 class="text-muted">Django Mock Server</h3>
+            </div>
+
+            <div>
+                <h1>{% block title %}{% endblock %}</h1>
+                
+                
+            </div>
+
+            <div class="row marketing">
+                <div class="col-lg-6">
+                    {% block content %}{% endblock %}
+
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>{% block footer %}{% endblock %}</p>
+            </div>
+
+        </div>
+
+
+        <script src="{{STATIC_URL}}scripts/4776dee8.vendor.js"></script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script>
+
+        <script src="{{STATIC_URL}}scripts/c6b52431.plugins.js"></script>
+
+        <script src="{{STATIC_URL}}scripts/b6c3df09.main.js"></script>
+

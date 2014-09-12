@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}API Detail{% endblock %}
+{% block content %}
+<h4>You Can Test Your API In Your Terminal Through The Command Below:</h4>
+<p>curl -v -X {{ item.method }} http://mock.mmclock.cn/apiview/{{ item.app_name }}/{{ item.url_path }}</p>
+
+<h1>app:{{ item.app_name }}</h1>
+<p>url:{{ item.url_path }}</p>
+<p>owner:{{ item.owner }}</p>
+<p>method:{{ item.method }}</p>
+<p>category:{{ item.category }}</p>
+<p>status_code:{{ item.status_code }}</p>
+<p>response_format:{{ item.response_format }}</p>
+<p>response_body:{{ item.response_body }}</p>
+<p>response_headers:{{ item.response_headers }}</p>
+<p>description:{{ item.description }}</p>
+<p><a href="/api/{{ item.id }}/update">edit</a></p>
+<p><a href="/api/{{ item.id }}/delete">delete</a></p>
+{% endblock %}

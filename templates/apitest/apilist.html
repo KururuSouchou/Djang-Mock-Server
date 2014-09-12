@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}API List For APP'{{ item.name }}'{% endblock %}
+{% block content %}
+{% for item in items %}
+    <li><a href="/api/{{ item.id }}/">{{ item.name }}</a></li>
+{% endfor %}
+{% include 'pagination.html' %}
+<p><a href="/{{ item.name }}/new_api">add new api</a></p>
+<p><a href="/app/{{ item.id }}/update">edit</a></p>
+<p><a href="/app/{{ item.id }}/delete">delete</a></p>
+{% endblock %}

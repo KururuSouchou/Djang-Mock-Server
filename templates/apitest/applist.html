@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}APP List{% endblock %}
+{% block content %}
+{% for item in items %}
+    <li>
+    	<p><a href="/app/{{ item.id }}/">{{ item.name }}</a></p>
+    </li>
+{% endfor %}
+{% include 'pagination.html' %}
+<p><a href="{% url 'newapp' %}">add new app</a></p>
+{% endblock %}
