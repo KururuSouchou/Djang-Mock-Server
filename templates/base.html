@@ -10,13 +10,13 @@
         <link rel="stylesheet" href="{{STATIC_URL}}styles/dfc57042.vendor.css">
         <link rel="stylesheet" href="{{STATIC_URL}}styles/a5896f90.main.css">
     
-    <body>
+    <body >
         <!--[if lt IE 10]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
 
-        <div class="container">
+        <div class="container" >
             <div class="header">
                 <ul class="nav nav-pills pull-right">
                 	{% if user.is_authenticated %}	
@@ -34,7 +34,7 @@
                     <li><a href="{% url 'applist' %}">Home</a></li>
                     
                 </ul>
-                <h3 class="text-muted">Django Mock Server</h3>
+                <h3 class="text-muted">Django Mock Server<small> 966最靚仔</small></h3>
             </div>
 
             <div>
@@ -43,8 +43,8 @@
                 
             </div>
 
-            <div class=>
-                <div class="col-lg-6">
+            <div class="row marketing">
+                <div class="col-xs-12">
                     {% block content %}{% endblock %}
 
                 </div>

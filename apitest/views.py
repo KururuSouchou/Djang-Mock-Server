@@ -10,6 +10,13 @@ from .forms import ApiForm, RegForm, AppForm, loginform
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+import datetime
+from mockserver.settings import MEDIA_ROOT
+
+
+now = str(datetime.datetime.now())
+
+
 
 @csrf_exempt
 def reg(request):
@@ -149,6 +156,8 @@ def app_list(request):
 
 def list_by_app(request, app_id):
     item = get_object_or_404(MyApp, pk=app_id)
+
+
     list1 = MyApi.objects.filter(app_name=item)
     paginator = Paginator(list1, 25)
     page = request.GET.get('page')
@@ -160,6 +169,21 @@ def list_by_app(request, app_id):
         items = paginator.page(paginator.num_pages)
     return render(request, 'apitest/apilist.html', {'items': items, 'item':item})
 
+def logview(request, app_id):
+    item = MyApp.objects.get(pk=app_id)
+    app_name = item.name
+    logfile = '%s/%s' % (MEDIA_ROOT, app_name)
+    try:
+        f = open(logfile)
+        log = ''
+        for line in f:
+            log += line
+        f.close()
+    except IOError:
+        log = 'Not yet.'
+
+    return render(request, 'apitest/log.html', {'item':item, 'log':log})
+
 def detail(request, api_id):
     item = get_object_or_404(MyApi, pk=api_id)
     context = {"item": item}
@@ -167,6 +191,35 @@ def detail(request, api_id):
 
 @csrf_exempt
 def apiview(request, app_name, url_path):
+    m = request.META
+    rmlist = [
+              'wsgi.multiprocess',
+              'SERVER_SOFTWARE',
+              'PATH_INFO',
+              'uwsgi.node',
+              'DOCUMENT_ROOT',
+              'wsgi.input',
+              'wsgi.multithread',
+              'wsgi.run_once',
+              'wsgi.errors',
+              'REMOTE_PORT',
+              'uwsgi.version',
+              'wsgi.file_wrapper',
+              'QUERY_STRING',
+              'UWSGI_SCHEME',
+              'wsgi.url_scheme',
+              'PYTHONPATH',
+              'SCRIPT_NAME',
+              'wsgi.version',
+              'CSRF_COOKIE',
+              ]
+    for n in rmlist:
+        try:
+            del m[n]
+        except KeyError:
+            continue
+    logfile = '%s/%s' % (MEDIA_ROOT, app_name)
+    log = file(logfile, 'a')
     old_path = url_path
     if '.' in url_path:
         d = url_path.rindex('.')
@@ -180,17 +233,34 @@ def apiview(request, app_name, url_path):
         else:
             url_path = old_path
             content_type = None
+    else:
+        content_type = None
 
     try:
         item = MyApp.objects.get(name=app_name)
     except ObjectDoesNotExist:
-        return HttpResponse(content='No such App.', content_type='text/plain', status=404, reason=None)
+
+        response = HttpResponse(content='No such App.', content_type='text/plain', status=404, reason=None)
+        msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
+        log.write(msg)
+        log.close()
+        return response
     try:
         i = MyApi.objects.get(app_name=item, url_path=url_path)
     except ObjectDoesNotExist:
-        return HttpResponse(content='No such Api.', content_type='text/plain', status=404, reason=None)
+
+        response = HttpResponse(content='No such Api.', content_type='text/plain', status=404, reason=None)
+        msg = +now + '\n' + str(m) + '\n' + str(response) + '\n\n'
+        log.write(msg)
+        log.close()
+        return response
     if not request.method == i.method:
-        return HttpResponse(content='No such method.', content_type='text/plain', status=404, reason=None)
+
+        response = HttpResponse(content='No such method.', content_type='text/plain', status=404, reason=None)
+        msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
+        log.write(msg)
+        log.close()
+        return response
     if not content_type == None:
         if '/' in i.response_format:
             s = i.response_format.rindex('/')
@@ -202,12 +272,19 @@ def apiview(request, app_name, url_path):
                 format = l
         else: format = i.response_format
         if not content_type == format:
-            return HttpResponse(content='Wrong content_type.', content_type='text/plain', status=404, reason=None)
+            response = HttpResponse(content='Wrong content_type.', content_type='text/plain', status=404, reason=None)
+            msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
+            log.write(msg)
+            log.close()
+            return response
 
     response = HttpResponse()
     response.__init__(content=i.response_body, content_type=i.response_format, status=200, reason=None)
-
     response.__setitem__('User appended header', i.response_headers)
+    response.__setitem__('User post data', str(request.body))
+    msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
+    log.write(msg)
+    log.close()
     return response
 
 def success(request):

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Log For {{ item.name }}{% endblock %}
+{% block content %}
+
+{{log}}
+<br />
+<script type="text/javascript">
+function goBack()
+  {window.history.go(-1)}  
+</script>
+<input type="button" value="Back" onclick="goBack()" />
+
+</form>
+{% endblock %}

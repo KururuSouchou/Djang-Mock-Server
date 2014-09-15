@@ -21,7 +21,6 @@ SECRET_KEY = 'lg%^ymajgr0&*(3(fc6$ni*6dpb%^nv)ga%4@(@a(q(805!8=k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'mock.mmclock.cn']
@@ -79,7 +78,36 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
+MEDIA_ROOT = (os.path.join(BASE_DIR, "media"))
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"), MEDIA_ROOT)
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
+
+MEDIA_URL = '/media/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'apitest.log',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+
+        'apitest': {
+            'handlers': ['file'],
+            'level': 'INFO',
+        },
+    }
+}
