@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Delete APP And All It's APIs{% endblock %}
+{% block title %}Delete Log(s){% endblock %}
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-    <p>Are you sure you want to delete "{{ object }}"?</p>
+    <p>Are you sure you want to delete logs for App "{{ item }}"?</p>
     <input type="submit" value="Confirm" />
 
 	<input type="button" value="Back" onclick="goBack()" />

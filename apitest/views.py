@@ -5,17 +5,11 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth import login, authenticate, logout
 from django.views.generic import UpdateView, DeleteView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import MyApi, MyApp
+from .models import MyApi, MyApp, Log
 from .forms import ApiForm, RegForm, AppForm, loginform
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-import datetime
-from mockserver.settings import MEDIA_ROOT
-
-
-now = str(datetime.datetime.now())
-
 
 
 @csrf_exempt
@@ -90,11 +84,15 @@ def new_api(request, app_name):
         if request.method == 'POST':
             form = ApiForm(request.POST, request.FILES)
             if form.is_valid():
-                i = form.save(commit=False)
-                i.app_name = item
-                i.owner = u
-                i.save()
-                return HttpResponseRedirect('/api/%s' % i.id)
+                try:
+                    api_already_exist = MyApi.objects.get(app_name=item, url_path=form.cleaned_data['url_path'], method=form.cleaned_data['method'])
+                    return render(request, 'apitest/newapi1.html', {'form': ApiForm(), 'item': item})
+                except ObjectDoesNotExist:
+                    i = form.save(commit=False)
+                    i.app_name = item
+                    i.owner = u
+                    i.save()
+                    return HttpResponseRedirect('/api/%s' % i.id)
         else: form = ApiForm()
         return render(request, 'apitest/newapi.html', {'form': form, 'item': item})
 
@@ -169,20 +167,24 @@ def list_by_app(request, app_id):
         items = paginator.page(paginator.num_pages)
     return render(request, 'apitest/apilist.html', {'items': items, 'item':item})
 
-def logview(request, app_id):
+def loglist(request, app_id):
     item = MyApp.objects.get(pk=app_id)
-    app_name = item.name
-    logfile = '%s/%s' % (MEDIA_ROOT, app_name)
-    try:
-        f = open(logfile)
-        log = ''
-        for line in f:
-            log += line
-        f.close()
-    except IOError:
-        log = 'Not yet.'
+    list1 = Log.objects.filter(app=item).order_by('-log_time')
+    return render(request, 'apitest/loglist.html', {'list': list1, 'item':item})
 
-    return render(request, 'apitest/log.html', {'item':item, 'log':log})
+@login_required(login_url='/login/')
+def dellog(request, app_id):
+    app = MyApp.objects.get(id=app_id)
+    if not request.user == app.owner:
+        raise Http404
+    if request.method == 'POST':
+        logs = Log.objects.filter(app=app)
+        logs.delete()
+        return HttpResponseRedirect(reverse('success'))
+    else:
+        return render(request, 'apitest/log_delete_confirm.html', {'item':app})
+
+
 
 def detail(request, api_id):
     item = get_object_or_404(MyApi, pk=api_id)
@@ -191,7 +193,10 @@ def detail(request, api_id):
 
 @csrf_exempt
 def apiview(request, app_name, url_path):
-    m = request.META
+    def logger():
+        log = Log(app=item, header=m, data_posted=request.body, body=response)
+        log.save()
+    meta = request.META
     rmlist = [
               'wsgi.multiprocess',
               'SERVER_SOFTWARE',
@@ -215,11 +220,13 @@ def apiview(request, app_name, url_path):
               ]
     for n in rmlist:
         try:
-            del m[n]
+            del meta[n]
         except KeyError:
             continue
-    logfile = '%s/%s' % (MEDIA_ROOT, app_name)
-    log = file(logfile, 'a')
+    m = ''
+    for k, v in meta.items():
+        m += (k + ':' + v + '\n')
+
     old_path = url_path
     if '.' in url_path:
         d = url_path.rindex('.')
@@ -239,28 +246,28 @@ def apiview(request, app_name, url_path):
     try:
         item = MyApp.objects.get(name=app_name)
     except ObjectDoesNotExist:
-
         response = HttpResponse(content='No such App.', content_type='text/plain', status=404, reason=None)
-        msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
-        log.write(msg)
-        log.close()
         return response
-    try:
-        i = MyApi.objects.get(app_name=item, url_path=url_path)
-    except ObjectDoesNotExist:
-
+    # try:
+    apis = MyApi.objects.filter(app_name=item, url_path=url_path)
+    if len(apis) == 0:
         response = HttpResponse(content='No such Api.', content_type='text/plain', status=404, reason=None)
-        msg = +now + '\n' + str(m) + '\n' + str(response) + '\n\n'
-        log.write(msg)
-        log.close()
+        logger()
         return response
-    if not request.method == i.method:
 
+    r = []
+    for api in apis:
+        if api.method == request.method:
+            r.append(api)
+
+    if len(r) == 0:
         response = HttpResponse(content='No such method.', content_type='text/plain', status=404, reason=None)
-        msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
-        log.write(msg)
-        log.close()
+        logger()
         return response
+
+    else: i = r[0]
+
+
     if not content_type == None:
         if '/' in i.response_format:
             s = i.response_format.rindex('/')
@@ -273,18 +280,17 @@ def apiview(request, app_name, url_path):
         else: format = i.response_format
         if not content_type == format:
             response = HttpResponse(content='Wrong content_type.', content_type='text/plain', status=404, reason=None)
-            msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
-            log.write(msg)
-            log.close()
+            logger()
             return response
 
     response = HttpResponse()
-    response.__init__(content=i.response_body, content_type=i.response_format, status=200, reason=None)
+    response.__init__(content=i.response_body, content_type=i.response_format, status=int(i.status_code), reason=None)
     response.__setitem__('User appended header', i.response_headers)
     response.__setitem__('User post data', str(request.body))
-    msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
-    log.write(msg)
-    log.close()
+#     msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
+#     log.write(msg)
+#     log.close()
+    logger()
     return response
 
 def success(request):

@@ -40,4 +40,11 @@ class MyApi(models.Model):
     owner = models.ForeignKey(User)
     def __unicode__(self):
         return self.name
+
+class Log(models.Model):
+    log_time = models.DateTimeField(auto_now=True)
+    app = models.ForeignKey(MyApp)
+    header = models.TextField()
+    data_posted = models.TextField(null=True, blank=True)
+    body = models.TextField()
     # Create your models here.

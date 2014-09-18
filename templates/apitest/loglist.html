@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}API Logs For APP '{{ item.name }}'{% endblock %}
+{% block content %}
+<div align="right">
+<a href="/logs/{{ item.id }}/delete/"><button>Delete Log(s)</button></a>
+</div>
+{% for item in list %}
+    <div>
+    	<pre>
+    {{ item.log_time | date:"Y M d H:i:s:u"}}
+    {{ item.header }}
+    {{ item.data_posted }}	
+	{{ item.body }}
+		</pre>
+    </div>
+{% endfor %}
+
+{% endblock %}

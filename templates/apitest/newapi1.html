@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}New API{% endblock %}
+{% block content %}
+
+<p>注意：填寫URL時只填相對路徑即可，前後無需加'/'</p>
+<p style="color: red">API WITH SAME URL AND METHOD IN THIS APP ALREADY EXISTS!</p>
+{% include 'form.html' %}
+
+
+{% endblock %}
