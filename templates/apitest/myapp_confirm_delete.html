@@ -1,15 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Delete APP And All It's APIs{% endblock %}
 {% block content %}
+{% ifequal user.id object.owner.id %}
 <form action="" method="post">{% csrf_token %}
     <p>Are you sure you want to delete "{{ object }}"?</p>
     <input type="submit" value="Confirm" />
-
-	<input type="button" value="Back" onclick="goBack()" />
-
-</form>
 <script type="text/javascript">
 function goBack()
   {window.history.go(-1)}  
 </script>
+<input type="button" value="Back" onclick="goBack()" />
+
+</form>
+{% else %}
+<p>You Are Not Owner Of This APP.</p>
+<p>Please Login!</p>
+{% endifequal %}
 {% endblock %}

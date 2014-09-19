@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from .views import reg, log_in, log_out, new_app, new_api, ApiUpdate, ApiDelete, list_by_app, apiview, detail, app_list, AppUpdate, AppDelete, success, loglist, dellog
+from .views import reg, log_in, log_out, new_app, new_api, ApiUpdate, ApiDelete, list_by_app, apiview, detail, app_list, AppUpdate, AppDelete, loglist, dellog
 urlpatterns = patterns('',
     url(r'^$', app_list, name='applist'),
     url(r'^app/(?P<app_id>\d+)/$', list_by_app, name='apilist'),
@@ -18,6 +18,6 @@ urlpatterns = patterns('',
     url(r'^reg/$', reg, name='reg'),
     url(r'^login/$', log_in, name='login'),
     url(r'^logout/$', log_out, name='logout'),
-    url(r'^success/$', success, name='success'),
+#     url(r'^success/$', success, name='success'),
 
 )

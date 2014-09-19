@@ -4,6 +4,8 @@
 <div align="right">
 <a href="/logs/{{ item.id }}/delete/"><button>Delete Log(s)</button></a>
 </div>
+
+<div style="margin-top: 10px">
 {% for item in list %}
     <div>
     	<pre>
@@ -14,5 +16,5 @@
 		</pre>
     </div>
 {% endfor %}
-
+</div>
 {% endblock %}

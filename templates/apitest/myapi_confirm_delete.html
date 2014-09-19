@@ -2,7 +2,7 @@
 
 {% block title %}API Delete Confirm{% endblock %}
 {% block content %}
-
+{% ifequal user.id object.owner.id %}
 <form action="" method="post">{% csrf_token %}
     <p>Are you sure you want to delete "{{ object }}"?</p>
     <input type="submit" value="Confirm" />
@@ -13,4 +13,8 @@ function goBack()
 <input type="button" value="Back" onclick="goBack()" />
 
 </form>
+{% else %}
+<p>You Are Not Owner Of This API.</p>
+<p>Please Login!</p>
+{% endifequal %}
 {% endblock %}

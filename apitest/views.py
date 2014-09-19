@@ -10,7 +10,7 @@ from .forms import ApiForm, RegForm, AppForm, loginform
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db import IntegrityError
 
 @csrf_exempt
 def reg(request):
@@ -30,7 +30,7 @@ def reg(request):
                 u.save()
                 us = authenticate(username=un, password=p1)
                 login(request, us)
-                return HttpResponseRedirect(reverse('success'))
+                return HttpResponseRedirect(reverse('applist'))
     else:
         form = RegForm()
         context = {'form': form}
@@ -51,7 +51,7 @@ def log_in(request):
                 return render(request, 'account/login2.html', context)
 
             login(request, us)
-            return HttpResponseRedirect(reverse('success'))
+            return HttpResponseRedirect(reverse('applist'))
     else:
         form = loginform()
         context = {'form': form}
@@ -59,7 +59,7 @@ def log_in(request):
 
 def log_out(request):
     logout(request)
-    return HttpResponseRedirect(reverse('success'))
+    return HttpResponseRedirect(reverse('applist'))
 
 @login_required(login_url='/login/')
 def new_app(request):
@@ -70,7 +70,7 @@ def new_app(request):
             i = form.save(commit=False)
             i.owner = u
             i.save()
-            return HttpResponseRedirect(reverse('success'))
+            return HttpResponseRedirect(reverse('applist'))
     else: form = AppForm()
     return render(request, 'apitest/newapp.html', {'form': form})
 
@@ -99,46 +99,46 @@ def new_api(request, app_name):
 class AppUpdate(UpdateView):
     model = MyApp
     template_name_suffix = '_update_form'
-    success_url = reverse_lazy('success')
+    success_url = reverse_lazy('applist')
     fields = ['name']
-    def get_object(self, queryset=None):
-        obj = super(AppUpdate, self).get_object()
-        u = self.request.user
-        if not obj.owner == u:
-            raise Http404
-        return obj
+#     def get_object(self, queryset=None):
+#         obj = super(AppUpdate, self).get_object()
+#         u = self.request.user
+#         if not obj.owner == u:
+#             raise Http404
+#         return obj
 
 class AppDelete(DeleteView):
     model = MyApp
-    success_url = reverse_lazy('success')
-    def get_object(self, queryset=None):
-        obj = super(AppDelete, self).get_object()
-        u = self.request.user
-        if not obj.owner == u:
-            raise Http404
-        return obj
+    success_url = reverse_lazy('applist')
+#     def get_object(self, queryset=None):
+#         obj = super(AppDelete, self).get_object()
+#         u = self.request.user
+#         if not obj.owner == u:
+#             raise Http404
+#         return obj
 
 class ApiUpdate(UpdateView):
     model = MyApi
     template_name_suffix = '_update_form'
-    success_url = reverse_lazy('success')
+    success_url = reverse_lazy('applist')
     fields = ['name', 'url_path', 'method', 'category', 'status_code', 'response_format', 'response_body', 'response_headers', 'description']
-    def get_object(self, queryset=None):
-        obj = super(ApiUpdate, self).get_object()
-        u = self.request.user
-        if not obj.owner == u:
-            raise Http404
-        return obj
+#     def get_object(self, queryset=None):
+#         obj = super(ApiUpdate, self).get_object()
+#         u = self.request.user
+#         if not obj.owner == u:
+#             raise Http404
+#         return obj
 
 class ApiDelete(DeleteView):
     model = MyApi
-    success_url = reverse_lazy('success')
-    def get_object(self, queryset=None):
-        obj = super(ApiDelete, self).get_object()
-        u = self.request.user
-        if not obj.owner == u:
-            raise Http404
-        return obj
+    success_url = reverse_lazy('applist')
+#     def get_object(self, queryset=None):
+#         obj = super(ApiDelete, self).get_object()
+#         u = self.request.user
+#         if not obj.owner == u:
+#             raise Http404
+#         return obj
 
 def app_list(request):
     list1 = MyApp.objects.all()
@@ -293,8 +293,8 @@ def apiview(request, app_name, url_path):
     logger()
     return response
 
-def success(request):
-    return render(request, 'success.html')
+# def success(request):
+#     return render(request, 'success.html')
 
 
 

@@ -1,9 +1,21 @@
 {% extends "base.html" %}
 {% block title %}APP Update{% endblock %}
 {% block content %}
-update my app
+{% ifequal user.id object.owner.id %}
+
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Update" />
+    <input style="margin: 20px" type="submit" value="Update" />
+    <input style="margin: 20px" type="reset" value="Reset" />
+    <script type="text/javascript">
+function goBack()
+{window.history.go(-1)}  
+</script>
+<input style="margin: 20px" type="button" value="Back" onclick="goBack()" />
 </form>
+</form>
+{% else %}
+<p>You Are Not Owner Of This API.</p>
+<p>Please Login!</p>
+{% endifequal %}
 {% endblock %}
