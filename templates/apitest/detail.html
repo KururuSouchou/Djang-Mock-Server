@@ -6,15 +6,29 @@
 <p>curl -v -X {{ item.method }} http://mock.mmclock.cn/apiview/{{ item.app_name }}/{{ item.url_path }}</p>
 <p><a href="/app/{{ item.app_name.id }}/">See More API(s) For This APP.</a></p>
 <h1>app:{{ item.app_name }}</h1>
-<p>url:{{ item.url_path }}</p>
-<p>owner:{{ item.owner }}</p>
-<p>method:{{ item.method }}</p>
-<p>category:{{ item.category }}</p>
-<p>status_code:{{ item.status_code }}</p>
-<p>response_format:{{ item.response_format }}</p>
-<p>response_body:{{ item.response_body }}</p>
-<p>response_headers:{{ item.response_headers }}</p>
-<p>description:{{ item.description }}</p>
-<p><a href="/api/{{ item.id }}/update">API edit</a></p>
-<p><a href="/api/{{ item.id }}/delete">API delete</a></p>
+
+<pre><p><b>URL:</b>           
+{{ item.url_path }}</p></pre>
+<pre><p><b>Owner: </b>          
+{{ item.owner }}</p></pre>
+<pre><p><b>Method:</b>          
+{{ item.method }}</p></pre>
+<pre><p><b>Category: </b>       
+{{ item.category }}</p></pre>
+<pre><p><b>Status_code:</b>     
+{{ item.status_code }}</p></pre>
+<pre><p><b>Response_format: </b>
+{{ item.response_format }}</p></pre>
+<pre><p><b>Response_body: </b>  
+{{ item.response_body }}</p></pre>
+<pre><p><b>Response_headers:</b>
+{{ item.response_headers }}</p></pre>
+<pre><p><b>Description:</b>     
+{{ item.description }}</p></pre>
+
+<div style="margin: 20px">
+<span>
+<a href="/api/{{ item.id }}/update">API edit</a></span>
+<span style="float: right"><a href="/api/{{ item.id }}/delete">API delete</a></span>
+</div>
 {% endblock %}

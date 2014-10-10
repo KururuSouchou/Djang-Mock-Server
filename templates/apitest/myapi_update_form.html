@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-
+{% load bootstrap %}
 {% block title %}Update API{% endblock %}
 {% block content %}
 {% ifequal user.id object.owner.id %}
 
 <form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
+    
+    {{ form|bootstrap }}
     <input style="margin: 20px" type="submit" value="Update" />
     <input style="margin: 20px" type="reset" value="Reset" />
     <script type="text/javascript">
@@ -18,4 +19,7 @@ function goBack()
 <p>You Are Not Owner Of This API.</p>
 <p>Please Login!</p>
 {% endifequal %}
+<script src="{{STATIC_URL}}scripts/jquery-1.11.1.min.js"></script>
+<script src="{{STATIC_URL}}scripts/JSDValidator-1.6.js"></script>
+<script src="{{STATIC_URL}}scripts/generator.js"></script>
 {% endblock %}

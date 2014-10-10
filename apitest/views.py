@@ -274,11 +274,12 @@ def apiview(request, app_name, url_path):
             l = i.response_format[s + 1:]
             if '+' in l:
                 p = l.index('+')
-                format = l[:p]
+                apiformat = l[:p]
             else:
-                format = l
-        else: format = i.response_format
-        if not content_type == format:
+                apiformat = l
+        else:
+            apiformat = i.response_format
+        if not content_type == apiformat:
             response = HttpResponse(content='Wrong content_type.', content_type='text/plain', status=404, reason=None)
             logger()
             return response

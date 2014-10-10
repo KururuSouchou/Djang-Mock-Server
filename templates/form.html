@@ -1,6 +1,9 @@
 
-
+{% load bootstrap %}
 <form enctype="multipart/form-data" method="post">{% csrf_token %}
-{{ form.as_p }}
+{{ form|bootstrap }}
 <input type="submit" value="Submit" />
 </form>
+<script src="{{STATIC_URL}}scripts/jquery-1.11.1.min.js"></script>
+<script src="{{STATIC_URL}}scripts/JSDValidator-1.6.js"></script>
+<script src="{{STATIC_URL}}scripts/generator.js"></script>

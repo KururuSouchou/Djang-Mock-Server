@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load bootstrap %}
 {% block title %}APP Update{% endblock %}
 {% block content %}
 {% ifequal user.id object.owner.id %}
 
 <form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
+    {{ form|bootstrap }}
     <input style="margin: 20px" type="submit" value="Update" />
     <input style="margin: 20px" type="reset" value="Reset" />
     <script type="text/javascript">
