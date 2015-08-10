@@ -23,7 +23,7 @@ SECRET_KEY = 'lg%^ymajgr0&*(3(fc6$ni*6dpb%^nv)ga%4@(@a(q(805!8=k'
 DEBUG = True
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'mock.mmclock.cn']
+ALLOWED_HOSTS = ['mock.api.sawhigh.com']
 
 
 # Application definition

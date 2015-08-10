@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
+from mockserver.settings import ALLOWED_HOSTS
 
 @csrf_exempt
 def reg(request):
@@ -94,51 +95,51 @@ def new_api(request, app_name):
                     i.save()
                     return HttpResponseRedirect('/api/%s' % i.id)
         else: form = ApiForm()
-        return render(request, 'apitest/newapi.html', {'form': form, 'item': item})
+    return render(request, 'apitest/newapi.html', {'form': form, 'item': item})
 
 class AppUpdate(UpdateView):
     model = MyApp
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('applist')
     fields = ['name']
-#     def get_object(self, queryset=None):
-#         obj = super(AppUpdate, self).get_object()
-#         u = self.request.user
-#         if not obj.owner == u:
-#             raise Http404
-#         return obj
+    def get_object(self, queryset=None):
+        obj = super(AppUpdate, self).get_object()
+        u = self.request.user
+        if not obj.owner == u:
+            raise Http404
+        return obj
 
 class AppDelete(DeleteView):
     model = MyApp
     success_url = reverse_lazy('applist')
-#     def get_object(self, queryset=None):
-#         obj = super(AppDelete, self).get_object()
-#         u = self.request.user
-#         if not obj.owner == u:
-#             raise Http404
-#         return obj
+    def get_object(self, queryset=None):
+        obj = super(AppDelete, self).get_object()
+        u = self.request.user
+        if not obj.owner == u:
+            raise Http404
+        return obj
 
 class ApiUpdate(UpdateView):
     model = MyApi
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('applist')
     fields = ['name', 'url_path', 'method', 'category', 'status_code', 'response_format', 'response_body', 'response_headers', 'description']
-#     def get_object(self, queryset=None):
-#         obj = super(ApiUpdate, self).get_object()
-#         u = self.request.user
-#         if not obj.owner == u:
-#             raise Http404
-#         return obj
+    def get_object(self, queryset=None):
+        obj = super(ApiUpdate, self).get_object()
+        u = self.request.user
+        if not obj.owner == u:
+            raise Http404
+        return obj
 
 class ApiDelete(DeleteView):
     model = MyApi
     success_url = reverse_lazy('applist')
-#     def get_object(self, queryset=None):
-#         obj = super(ApiDelete, self).get_object()
-#         u = self.request.user
-#         if not obj.owner == u:
-#             raise Http404
-#         return obj
+    def get_object(self, queryset=None):
+        obj = super(ApiDelete, self).get_object()
+        u = self.request.user
+        if not obj.owner == u:
+            raise Http404
+        return obj
 
 def app_list(request):
     list1 = MyApp.objects.all()
@@ -180,7 +181,7 @@ def dellog(request, app_id):
     if request.method == 'POST':
         logs = Log.objects.filter(app=app)
         logs.delete()
-        return HttpResponseRedirect(reverse('success'))
+        return HttpResponseRedirect(reverse('apilist', args=[app.id]))
     else:
         return render(request, 'apitest/log_delete_confirm.html', {'item':app})
 
@@ -188,7 +189,9 @@ def dellog(request, app_id):
 
 def detail(request, api_id):
     item = get_object_or_404(MyApi, pk=api_id)
-    context = {"item": item}
+    protocol = "https://" if request.is_secure() else "http://"
+    url_prefix = protocol + ALLOWED_HOSTS[0]
+    context = {"item": item, "url_prefix":url_prefix}
     return render(request, 'apitest/detail.html', context)
 
 @csrf_exempt
@@ -288,14 +291,10 @@ def apiview(request, app_name, url_path):
     response.__init__(content=i.response_body, content_type=i.response_format, status=int(i.status_code), reason=None)
     response.__setitem__('User appended header', i.response_headers)
     response.__setitem__('User post data', str(request.body))
-#     msg = now + '\n' + str(m) + '\n' + str(response) + '\n\n'
-#     log.write(msg)
-#     log.close()
+
     logger()
     return response
 
-# def success(request):
-#     return render(request, 'success.html')
 
 
 
