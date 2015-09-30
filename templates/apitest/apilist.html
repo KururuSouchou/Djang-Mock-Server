@@ -2,13 +2,13 @@
 {% block title %}API List For APP'{{ item.name }}'{% endblock %}
 {% block content %}
 {% for item in items %}
-    <li><a href="/api/{{ item.id }}/">{{ item.name }}, {{ item.method }}, {{ item.response_format }}</a></li>
+    <li><a href="{% url 'detail' item.id %}">{{ item.name }}, {{ item.method }}, {{ item.response_format }}</a></li>
 {% endfor %}
 {% include 'pagination.html' %}
-<p><a href="/logs/{{ item.id }}/">view log</a></p>
-<p><a href="/{{ item.name }}/new_api">add new api</a></p>
-<p><a href="/app/{{ item.id }}/update">APP edit</a></p>
-<p><a href="/app/{{ item.id }}/delete">APP delete</a></p>
+<p><a href="{% url 'loglist' item.id %}">view log</a></p>
+<p><a href="{% url 'newapi' item.name %}">add new api</a></p>
+<p><a href="{% url 'appupdate' item.id %}">APP edit</a></p>
+<p><a href="{% url 'appdelete' item.id %}">APP delete</a></p>
 
 Logs For The App:
 {{ log }}
